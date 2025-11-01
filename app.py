@@ -83,7 +83,7 @@ def move_to_trash(file_path):
 
 def main():
     # Set the folder path
-    folder_path = Path("~/Downloads")
+    folder_path = Path.home() / "Downloads"
     
     # Find all .mp4 files in the folder
     mp4_files = list(folder_path.glob("*.mp4"))
