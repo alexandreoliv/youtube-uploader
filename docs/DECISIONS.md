@@ -42,6 +42,12 @@ Only files matching `YYYY-MM-DD HH.MM.SS.mp4` are processed. Other MP4s are skip
 
 ---
 
-## No config file
+## No config file (beyond optional `.env`)
 
-Artist and city are prompted interactively each run. No config or CLI flags. Keeps setup simple; config file could be added later if needed.
+Artist and city are prompted interactively each run. Optional `.env` only supplies `PRESET_CITIES` for the menu; there are no CLI flags. Keeps setup simple.
+
+---
+
+## Preset cities in the prompt
+
+Common cities are offered as numbered quick-picks via the `PRESET_CITIES` variable in a local `.env` file (template: `.env.example`) so the public repo does not embed personal defaults; any other city can still be entered as free text. `.env` is gitignored.

@@ -7,7 +7,8 @@ youtube-uploader/
 ├── app.py              # Main application logic
 ├── requirements.txt    # Python dependencies
 ├── README.md           # User-facing setup and usage
-├── .gitignore          # Excludes client_secrets.json, token.pickle, venv/
+├── .env.example        # Template for PRESET_CITIES (copy to `.env`)
+├── .gitignore          # Excludes .env, client_secrets.json, token.pickle, venv/
 └── docs/               # Project documentation
 ```
 
@@ -20,6 +21,7 @@ The project is a single module (`app.py`) with four responsibilities:
 | `get_authenticated_service()` | OAuth flow, token persistence, YouTube API client build |
 | `upload_video()` | Resumable upload, progress reporting, video metadata |
 | `move_to_trash()` | Post-upload cleanup via `gio trash` |
+| `prompt_for_city()` | City quick-picks from `PRESET_CITIES` in `.env` or free-text name |
 | `main()` | Discovery, user input, orchestration |
 
 ## Data Flow
@@ -57,7 +59,7 @@ flowchart TD
 ## Execution Flow
 
 1. **Discovery** — `Path.home() / "Downloads"` scanned for `*.mp4`
-2. **User input** — Artist and city prompted via `input()`
+2. **User input** — Artist via `input()`; city via `prompt_for_city()` (presets or custom)
 3. **Auth** — `get_authenticated_service()` loads or refreshes OAuth credentials
 4. **Filter** — Regex `(\d{4})-(\d{2})-(\d{2})\s+(\d{2})\.(\d{2})\.(\d{2})\.mp4` filters valid filenames
 5. **Upload loop** — Each matching file uploaded, then moved to trash on success

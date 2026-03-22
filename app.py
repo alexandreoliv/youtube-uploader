@@ -1,6 +1,9 @@
 import os
 import re
 from pathlib import Path
+from typing import Tuple
+
+from dotenv import load_dotenv
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.auth.exceptions import RefreshError
@@ -8,8 +11,45 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 import pickle
 
+load_dotenv()
+
 # YouTube API scopes
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
+
+
+def _preset_cities_from_env() -> Tuple[str, ...]:
+    """Comma-separated PRESET_CITIES in .env (see .env.example)."""
+    raw = os.getenv("PRESET_CITIES", "").strip()
+    if not raw:
+        return ()
+    return tuple(part.strip() for part in raw.split(",") if part.strip())
+
+
+PRESET_CITIES = _preset_cities_from_env()
+
+
+def prompt_for_city() -> str:
+    """Return a city from presets (1, 2, …) or a user-typed name."""
+    presets = PRESET_CITIES
+    if presets:
+        menu = ", ".join(f"{i} for {name}" for i, name in enumerate(presets, start=1))
+        print(f"City: {menu}, or type another city name.")
+        field = "City (number or name): "
+    else:
+        print("City (copy .env.example to .env and set PRESET_CITIES for quick-picks):")
+        field = "City: "
+    while True:
+        raw = input(field).strip()
+        if not raw:
+            return ""
+        if raw.isdigit() and presets:
+            idx = int(raw)
+            if 1 <= idx <= len(presets):
+                return presets[idx - 1]
+            print(f"Enter 1–{len(presets)} or type a city name.")
+            continue
+        return raw
+
 
 def get_authenticated_service():
     """Authenticate with YouTube API"""
@@ -106,7 +146,7 @@ def main():
     
     # Ask for artist name and city
     artist_name = input("Enter artist/band name: ").strip()
-    city = input("Enter city: ").strip()
+    city = prompt_for_city()
     
     if not artist_name or not city:
         print("Artist name and city cannot be empty.")

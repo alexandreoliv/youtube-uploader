@@ -7,10 +7,24 @@ The application exposes functions in `app.py`. There are no HTTP endpoints.
 | Name | Value | Description |
 |------|-------|-------------|
 | `SCOPES` | `['https://www.googleapis.com/auth/youtube.upload']` | OAuth scope for YouTube upload |
+| `PRESET_CITIES` | (runtime) | Parsed from env after `load_dotenv()` — comma-separated names, see `.env.example` |
 
 ---
 
 ## Functions
+
+### `prompt_for_city()`
+
+Interactive city selection: if `PRESET_CITIES` is non-empty, prints a menu (`1 for …`, `2 for …`) and reads `City (number or name):`. If unset/empty, prompts for a city name only (see `.env.example`).
+
+**Returns:** `str` — chosen preset city, or a trimmed free-text name. Empty string if the user submits blank (caller should treat as invalid).
+
+**Behavior:**
+- With presets: digits only and in range → matching preset; digits only out of range → hint and re-prompt.
+- Without presets: all input is treated as the city name (including digit-only strings).
+- Any non-digit-only input (when presets exist): returned as the city name as-is (after strip).
+
+---
 
 ### `get_authenticated_service()`
 
@@ -75,7 +89,7 @@ Entry point. Scans Downloads, prompts for artist/city, authenticates, uploads ma
 
 **Flow:**
 1. Scan `~/Downloads` for `*.mp4`
-2. Prompt: `Enter artist/band name:` and `Enter city:`
+2. Prompt: `Enter artist/band name:` then `prompt_for_city()` (menu + `City (number or name):`)
 3. Call `get_authenticated_service()`
 4. For each file matching `YYYY-MM-DD HH.MM.SS.mp4`:
    - Build title: `{Artist} | {City} | YYYY MM DD | HH MM SS`

@@ -44,7 +44,17 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Get YouTube API Credentials
+### 4. Environment file
+
+Copy the example env file (`.env` is gitignored so your choices stay local):
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` if you want different **preset cities** for the numbered menu (`PRESET_CITIES` is a comma-separated list).
+
+### 5. Get YouTube API Credentials
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project (or select existing one)
@@ -82,7 +92,7 @@ python app.py
 
 4. Follow the prompts:
     - Enter the artist/band name
-    - Enter the city name
+    - For city: if `PRESET_CITIES` is set in `.env`, choose a number or type another city; otherwise type the city name
     - Wait for uploads to complete
 
 ## File Naming Convention
