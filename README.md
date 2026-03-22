@@ -119,7 +119,8 @@ Metallica | Berlin | 2025 10 23 | 21 30 24
 
 **Authentication issues**
 
--   Delete `token.pickle` and run the script again
+-   If you see `invalid_grant` / `RefreshError` when refreshing: the saved refresh token is no longer valid (Google revoked it, you changed password, or OAuth client was recreated). The script will prompt for browser sign-in again; you can also delete `token.pickle` manually and re-run.
+-   Delete `token.pickle` and run the script again if auth seems stuck
 -   Make sure YouTube Data API v3 is enabled in your Google Cloud project
 
 **Upload fails**

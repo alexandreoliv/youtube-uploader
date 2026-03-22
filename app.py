@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from google.auth.exceptions import RefreshError
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 import pickle
@@ -19,22 +20,31 @@ def get_authenticated_service():
         with open('token.pickle', 'rb') as token:
             creds = pickle.load(token)
     
-    # If there are no valid credentials, let the user log in
+    # If there are no valid credentials, refresh or run OAuth
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
+            try:
+                creds.refresh(Request())
+            except RefreshError:
+                creds = None
+                if os.path.exists('token.pickle'):
+                    os.remove('token.pickle')
+                print(
+                    "Saved token could not be refreshed (revoked or expired). "
+                    "Starting browser sign-in again."
+                )
+
+        if not creds or not creds.valid:
             if not os.path.exists('client_secrets.json'):
                 print("ERROR: client_secrets.json not found!")
                 print("Please download it from Google Cloud Console:")
                 print("https://console.cloud.google.com/apis/credentials")
                 return None
-            
+
             flow = InstalledAppFlow.from_client_secrets_file(
                 'client_secrets.json', SCOPES)
             creds = flow.run_local_server(port=0)
-        
-        # Save the credentials for the next run
+
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
     

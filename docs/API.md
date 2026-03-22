@@ -21,8 +21,9 @@ Authenticates with YouTube API and returns a configured client.
 **Behavior:**
 1. Loads credentials from `token.pickle` if present
 2. Refreshes expired credentials if a refresh token exists
-3. Otherwise runs OAuth flow via `client_secrets.json` (opens browser)
-4. Saves credentials to `token.pickle` for future runs
+3. If refresh fails with `RefreshError` (e.g. revoked token), removes `token.pickle` and runs OAuth again
+4. Otherwise runs OAuth flow via `client_secrets.json` (opens browser)
+5. Saves credentials to `token.pickle` for future runs
 
 **Raises:** None (returns `None` on failure, prints error if `client_secrets.json` missing)
 
