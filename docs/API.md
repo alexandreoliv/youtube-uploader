@@ -8,10 +8,36 @@ The application exposes functions in `app.py`. There are no HTTP endpoints.
 |------|-------|-------------|
 | `SCOPES` | `['https://www.googleapis.com/auth/youtube.upload']` | OAuth scope for YouTube upload |
 | `PRESET_CITIES` | (runtime) | Parsed from env after `load_dotenv()` — comma-separated names, see `.env.example` |
+| `MP4_TIMESTAMP_PATTERN` | compiled `re.Pattern` | Full-match regex for `YYYY-MM-DD HH.MM.SS.mp4` filenames |
 
 ---
 
 ## Functions
+
+### `discover_timestamp_mp4s(folder_path)`
+
+Scans `folder_path` for `*.mp4`, splits into timestamp-named files (pattern below) vs others.
+
+**Returns:** `(matching, skipped)` — each a `list[Path]`. `matching` is sorted by `path.name` (upload order).
+
+---
+
+### `prompt_band_segments(total_videos)`
+
+Interactive multi-band setup for one festival/run.
+
+**Parameters:** `total_videos` — number of timestamp-named files (used in the instruction line).
+
+**Returns:** `list[tuple[str, int]]` — `(band_name, count)` per segment in upload order.
+
+**Prompts:**
+- Band 1: `Band 1 name:` (required; blank re-prompts)
+- Bands 2+: `Band N name (press Enter if none):` — blank finishes input (no count asked)
+- After each non-empty name: `Number of videos for "{name}" (1–100):` — integer validation loop
+
+**Caller validation:** Sum of counts must equal `total_videos`.
+
+---
 
 ### `prompt_for_city()`
 
@@ -83,17 +109,18 @@ Moves a file to the system trash (Ubuntu/GNOME).
 
 ### `main()`
 
-Entry point. Scans Downloads, prompts for artist/city, authenticates, uploads matching MP4s, and trashes them on success.
+Entry point. Scans Downloads, prompts for band segments and city, authenticates, uploads matching MP4s in sorted filename order, and trashes them on success.
 
 **Returns:** None
 
 **Flow:**
-1. Scan `~/Downloads` for `*.mp4`
-2. Prompt: `Enter artist/band name:` then `prompt_for_city()` (menu + `City (number or name):`)
-3. Call `get_authenticated_service()`
-4. For each file matching `YYYY-MM-DD HH.MM.SS.mp4`:
-   - Build title: `{Artist} | {City} | YYYY MM DD | HH MM SS`
+1. Scan `~/Downloads` for `*.mp4`; partition with `discover_timestamp_mp4s()`; print counts (matching vs skipped)
+2. `prompt_band_segments(len(matching))`; verify sum of counts equals number of matching files
+3. `prompt_for_city()` (menu + `City (number or name):` when presets exist)
+4. Print summary (bands + city), then `get_authenticated_service()`
+5. Zip sorted matching files with per-file band labels derived from segments; for each file:
+   - Build title: `{Band} | {City} | YYYY MM DD | HH MM SS`
    - Call `upload_video()`, then `move_to_trash()` on success
-5. Print total uploaded count
+6. Print total uploaded count
 
-**Exits early if:** No MP4s found, empty artist/city, or auth fails.
+**Exits early if:** No MP4s, no timestamp-named files, empty band plan, count mismatch, empty city, or auth fails.

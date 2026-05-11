@@ -11,7 +11,8 @@ This script scans `~/Downloads` for MP4 files with timestamp filenames (e.g., `2
 -   Automatic detection of MP4 files in Downloads folder
 -   YouTube upload with unlisted privacy setting
 -   Videos marked as "not for kids"
--   Formatted video titles: `{Artist} | {City} | YYYY MM DD | HH MM SS`
+-   Formatted video titles: `{Artist/Band} | {City} | YYYY MM DD | HH MM SS`
+-   **Multi-band festival flow**: assign consecutive videos (sorted by filename) to each band with counts 1–100; blank band name ends the list
 -   Automatic file cleanup (moves to trash after successful upload)
 -   Upload progress tracking
 
@@ -91,9 +92,11 @@ python app.py
     - Save credentials for future use (stored in `token.pickle`)
 
 4. Follow the prompts:
-    - Enter the artist/band name
-    - For city: if `PRESET_CITIES` is set in `.env`, choose a number or type another city; otherwise type the city name
-    - Wait for uploads to complete
+    - **Band 1 name**, then **number of videos** for that band (1–100). Repeat for band 2, 3, … . When there are no more bands, press **Enter** at `Band N name (press Enter if none):`.
+    - **City**: if `PRESET_CITIES` is set in `.env`, choose a number or type another city; otherwise type the city name.
+    - Confirm the printed summary, then wait for uploads to finish.
+
+**Important:** Put every video you want in this run into Downloads **before** you start. Matching files are uploaded in **sorted filename order** (e.g. `2025-10-23 21.30.24.mp4`). Your counts must **add up** to exactly how many timestamp-named MP4s were found; otherwise the script exits before uploading. MP4s that do not match `YYYY-MM-DD HH.MM.SS.mp4` are skipped and left in Downloads.
 
 ## File Naming Convention
 

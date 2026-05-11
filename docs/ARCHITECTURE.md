@@ -21,6 +21,8 @@ The project is a single module (`app.py`) with four responsibilities:
 | `get_authenticated_service()` | OAuth flow, token persistence, YouTube API client build |
 | `upload_video()` | Resumable upload, progress reporting, video metadata |
 | `move_to_trash()` | Post-upload cleanup via `gio trash` |
+| `discover_timestamp_mp4s()` | Split Downloads `*.mp4` into timestamp-named (sorted) vs skipped |
+| `prompt_band_segments()` | Multi-band prompts: name + count per segment until blank name |
 | `prompt_for_city()` | City quick-picks from `PRESET_CITIES` in `.env` or free-text name |
 | `main()` | Discovery, user input, orchestration |
 
@@ -30,7 +32,7 @@ The project is a single module (`app.py`) with four responsibilities:
 flowchart TD
     subgraph Input
         A[~/Downloads/*.mp4]
-        B[Artist name]
+        B[Band segments name + count]
         C[City name]
     end
 
@@ -42,27 +44,29 @@ flowchart TD
 
     subgraph Process
         G[Match filename YYYY-MM-DD HH.MM.SS.mp4]
-        H[Upload with title]
-        I[Move to trash]
+        H[Sort matching files by name]
+        I[Upload with title per segment order]
+        J[Move to trash]
     end
 
     A --> G
-    B --> H
-    C --> H
+    G --> H
+    B --> I
+    C --> I
     D --> E
     E --> F
-    G --> H
-    F --> H
     H --> I
+    F --> I
+    I --> J
 ```
 
 ## Execution Flow
 
-1. **Discovery** — `Path.home() / "Downloads"` scanned for `*.mp4`
-2. **User input** — Artist via `input()`; city via `prompt_for_city()` (presets or custom)
+1. **Discovery** — `Path.home() / "Downloads"` scanned for `*.mp4`; timestamp-named files sorted by filename
+2. **User input** — `prompt_band_segments()` (band name + video count 1–100 per segment; blank name after the first band ends the list); counts must equal the number of matching files; city via `prompt_for_city()` (presets or custom)
 3. **Auth** — `get_authenticated_service()` loads or refreshes OAuth credentials
-4. **Filter** — Regex `(\d{4})-(\d{2})-(\d{2})\s+(\d{2})\.(\d{2})\.(\d{2})\.mp4` filters valid filenames
-5. **Upload loop** — Each matching file uploaded, then moved to trash on success
+4. **Filter** — Regex `(\d{4})-(\d{2})-(\d{2})\s+(\d{2})\.(\d{2})\.(\d{2})\.mp4` (`MP4_TIMESTAMP_PATTERN`) filters valid filenames; other MP4s are reported as skipped
+5. **Upload loop** — Each matching file uploaded with the band name for its segment position in sorted order, then moved to trash on success
 
 ## Design Patterns
 

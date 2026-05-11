@@ -42,9 +42,17 @@ Only files matching `YYYY-MM-DD HH.MM.SS.mp4` are processed. Other MP4s are skip
 
 ---
 
+## Multi-band uploads (one folder)
+
+For festivals with several acts, drop **all** timestamp-named MP4s into Downloads once. The script uploads in **sorted filename order** (typically chronological). You enter band **A** and how many files belong to **A** from the start of that order, then band **B** and its count, and so on; press **Enter** on a blank band name when there are no more acts. The sum of those counts must equal the number of matching files.
+
+Single-band nights are the same flow: one band name and a count equal to the number of videos.
+
+---
+
 ## No config file (beyond optional `.env`)
 
-Artist and city are prompted interactively each run. Optional `.env` only supplies `PRESET_CITIES` for the menu; there are no CLI flags. Keeps setup simple.
+Bands (names + counts per segment), city, and optional preset cities are prompted each run. Optional `.env` only supplies `PRESET_CITIES` for the menu; there are no CLI flags. Keeps setup simple.
 
 ---
 
