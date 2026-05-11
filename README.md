@@ -11,7 +11,7 @@ This script scans `~/Downloads` for MP4 files with timestamp filenames (e.g., `2
 -   Automatic detection of MP4 files in Downloads folder
 -   YouTube upload with unlisted privacy setting
 -   Videos marked as "not for kids"
--   Formatted video titles: `{Artist/Band} | {City} | YYYY MM DD | HH MM SS`
+-   Formatted video titles: `{Artist/Band} | {City} | YYYY MM DD | HH MM SS`, or `{Band} @ {Festival} | …` when you enter a festival name
 -   **Multi-band festival flow**: assign consecutive videos (sorted by filename) to each band with counts 1–100; blank band name ends the list
 -   Automatic file cleanup (moves to trash after successful upload)
 -   Upload progress tracking
@@ -92,6 +92,7 @@ python app.py
     - Save credentials for future use (stored in `token.pickle`)
 
 4. Follow the prompts:
+    - **Festival name** (optional): press **Enter** to skip; if you type a name, every title uses `{Band} @ {Festival}` before the city (e.g. `Empyrium @ Walpurgisnacht | Berlin | …`).
     - **Band 1 name**, then **number of videos** for that band (1–100). Repeat for band 2, 3, … . When there are no more bands, press **Enter** at `Band N name (press Enter if none):`.
     - **City**: if `PRESET_CITIES` is set in `.env`, choose a number or type another city; otherwise type the city name.
     - Confirm the printed summary, then wait for uploads to finish.
@@ -112,6 +113,12 @@ These will be uploaded with titles like:
 
 ```
 Metallica | Berlin | 2025 10 23 | 21 30 24
+```
+
+If you entered a **festival name** at the first prompt:
+
+```
+Empyrium @ Walpurgisnacht | Berlin | 2026 05 02 | 23 55 51
 ```
 
 ## Notes

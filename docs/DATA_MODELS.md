@@ -21,9 +21,17 @@ The project has no internal database or custom schemas. Data is derived from fil
 
 ## Video Title Format
 
-`{Artist} | {City} | {year} {month} {day} | {hour} {minute} {second}`
+`{ArtistLine} | {City} | {year} {month} {day} | {hour} {minute} {second}`
 
-**Example:** `Metallica | Berlin | 2025 10 23 | 21 30 24`
+Where `{ArtistLine}` is:
+
+- `{Band}` if no festival name was entered, or
+- `{Band} @ {Festival}` when a festival name was provided at the start of the prompts.
+
+**Examples:**
+
+- `Metallica | Berlin | 2025 10 23 | 21 30 24`
+- `Empyrium @ Walpurgisnacht | Berlin | 2026 05 02 | 23 55 51`
 
 ---
 

@@ -48,6 +48,8 @@ For festivals with several acts, drop **all** timestamp-named MP4s into Download
 
 Single-band nights are the same flow: one band name and a count equal to the number of videos.
 
+Optional **festival name** (first prompt): when set, each title prefixes the band with ` @ ` and that name (e.g. `Empyrium @ Walpurgisnacht | …`).
+
 ---
 
 ## No config file (beyond optional `.env`)

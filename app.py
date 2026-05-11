@@ -33,6 +33,19 @@ MP4_TIMESTAMP_PATTERN = re.compile(
 )
 
 
+def prompt_for_festival() -> str:
+    """Optional festival line-up label; empty means band names are used as-is in titles."""
+    return input("Festival name (press Enter if none): ").strip()
+
+
+def artist_title_part(band_name: str, festival_name: str) -> str:
+    """Snippet before ` | {city} | …` in the YouTube title."""
+    fest = festival_name.strip()
+    if fest:
+        return f"{band_name} @ {fest}"
+    return band_name
+
+
 def prompt_for_city() -> str:
     """Return a city from presets (1, 2, …) or a user-typed name."""
     presets = PRESET_CITIES
@@ -224,6 +237,8 @@ def main():
         "Upload order is sorted by filename (usually chronological within one export batch)."
     )
 
+    festival_name = prompt_for_festival()
+
     segments = prompt_band_segments(len(mp4_files))
     if not segments:
         print("Add at least one band and video count.")
@@ -248,7 +263,8 @@ def main():
 
     print("\nReady to upload:")
     for name, count in segments:
-        print(f"  • {name}: {count} video(s)")
+        label = artist_title_part(name, festival_name)
+        print(f"  • {label}: {count} video(s)")
     print(f"  • City: {city}")
     print()
 
@@ -261,13 +277,14 @@ def main():
 
     uploaded_count = 0
 
-    for file_path, artist_name in zip(mp4_files, labels):
+    for file_path, band_name in zip(mp4_files, labels):
         filename = file_path.name
         match = MP4_TIMESTAMP_PATTERN.match(filename)
         year, month, day, hour, minute, second = match.groups()
 
+        artist_line = artist_title_part(band_name, festival_name)
         title = (
-            f"{artist_name} | {city} | {year} {month} {day} | "
+            f"{artist_line} | {city} | {year} {month} {day} | "
             f"{hour} {minute} {second}"
         )
 

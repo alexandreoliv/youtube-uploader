@@ -14,6 +14,24 @@ The application exposes functions in `app.py`. There are no HTTP endpoints.
 
 ## Functions
 
+### `prompt_for_festival()`
+
+First prompt of a run: optional festival or event name (`Festival name (press Enter if none):`).
+
+**Returns:** `str` — trimmed input, or `""` when skipped.
+
+**Behaviour:** Passed into `artist_title_part()` for every upload; when non-empty, titles use `{Band} @ {Festival}`.
+
+---
+
+### `artist_title_part(band_name, festival_name)`
+
+Builds the artist fragment at the start of the YouTube title (before ` | {City} | …`).
+
+**Returns:** `{Band} @ {Festival}` when `festival_name.strip()` is non-empty; otherwise `{Band}`.
+
+---
+
 ### `discover_timestamp_mp4s(folder_path)`
 
 Scans `folder_path` for `*.mp4`, splits into timestamp-named files (pattern below) vs others.
@@ -109,18 +127,19 @@ Moves a file to the system trash (Ubuntu/GNOME).
 
 ### `main()`
 
-Entry point. Scans Downloads, prompts for band segments and city, authenticates, uploads matching MP4s in sorted filename order, and trashes them on success.
+Entry point. Scans Downloads, prompts for festival (optional), band segments, and city; authenticates; uploads matching MP4s in sorted filename order; trashes them on success.
 
 **Returns:** None
 
 **Flow:**
 1. Scan `~/Downloads` for `*.mp4`; partition with `discover_timestamp_mp4s()`; print counts (matching vs skipped)
-2. `prompt_band_segments(len(matching))`; verify sum of counts equals number of matching files
-3. `prompt_for_city()` (menu + `City (number or name):` when presets exist)
-4. Print summary (bands + city), then `get_authenticated_service()`
-5. Zip sorted matching files with per-file band labels derived from segments; for each file:
-   - Build title: `{Band} | {City} | YYYY MM DD | HH MM SS`
+2. `prompt_for_festival()`
+3. `prompt_band_segments(len(matching))`; verify sum of counts equals number of matching files
+4. `prompt_for_city()` (menu + `City (number or name):` when presets exist)
+5. Print summary (bands as `artist_title_part` + city), then `get_authenticated_service()`
+6. Zip sorted matching files with per-file band labels derived from segments; for each file:
+   - Build title: `{artist_title_part(Band, Festival)} | {City} | YYYY MM DD | HH MM SS`
    - Call `upload_video()`, then `move_to_trash()` on success
-6. Print total uploaded count
+7. Print total uploaded count
 
 **Exits early if:** No MP4s, no timestamp-named files, empty band plan, count mismatch, empty city, or auth fails.
