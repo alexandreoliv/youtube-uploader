@@ -51,9 +51,9 @@ Interactive multi-band setup for one festival/run.
 **Prompts:**
 - Band 1: `Band 1 name:` (required; blank re-prompts)
 - Bands 2+: `Band N name (press Enter if none):` — blank finishes input (no count asked)
-- After each non-empty name: `Number of videos for "{name}" (1–100):` — integer validation loop
+- After each non-empty name: `Number of videos for "{name}" (1–{remaining}):` — `remaining` is how many matching files are not yet allocated (starts at `total_videos`; counts down after each band). Validates `n` with `1 <= n <= remaining`. When the last allocation uses every remaining file, returns immediately without asking for another band name.
 
-**Caller validation:** Sum of counts must equal `total_videos`.
+**Caller validation:** Sum of counts must equal `total_videos` (e.g. if the user ends with a blank band name before every file was assigned).
 
 ---
 

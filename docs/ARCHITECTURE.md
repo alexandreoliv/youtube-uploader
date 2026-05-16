@@ -67,7 +67,7 @@ flowchart TD
 ## Execution Flow
 
 1. **Discovery** — `Path.home() / "Downloads"` scanned for `*.mp4`; timestamp-named files sorted by filename
-2. **User input** — `prompt_for_festival()` (optional; non-empty value suffixes every band with `@ Festival` in titles); `prompt_band_segments()` (band name + video count 1–100 per segment; blank name after the first band ends the list); counts must equal the number of matching files; city via `prompt_for_city()` (presets or custom)
+2. **User input** — `prompt_for_festival()` (optional; non-empty value suffixes every band with `@ Festival` in titles); `prompt_band_segments()` (band name + video count per segment: integer from 1 through how many files are left in sorted order; blank name after the first band ends the list; assigning all remaining files ends band entry without another prompt); counts must equal the number of matching files; city via `prompt_for_city()` (presets or custom)
 3. **Auth** — `get_authenticated_service()` loads or refreshes OAuth credentials
 4. **Filter** — Regex `(\d{4})-(\d{2})-(\d{2})\s+(\d{2})\.(\d{2})\.(\d{2})\.mp4` (`MP4_TIMESTAMP_PATTERN`) filters valid filenames; other MP4s are reported as skipped
 5. **Upload loop** — Each matching file uploaded with `artist_title_part(band, festival)` then city and timestamp, then moved to trash on success

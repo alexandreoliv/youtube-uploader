@@ -12,7 +12,7 @@ This script scans `~/Downloads` for MP4 files with timestamp filenames (e.g., `2
 -   YouTube upload with unlisted privacy setting
 -   Videos marked as "not for kids"
 -   Formatted video titles: `{Artist/Band} | {City} | YYYY MM DD | HH MM SS`, or `{Band} @ {Festival} | …` when you enter a festival name
--   **Multi-band festival flow**: assign consecutive videos (sorted by filename) to each band with counts 1–100; blank band name ends the list
+-   **Multi-band festival flow**: assign consecutive videos (sorted by filename) to each band; each count must be between 1 and how many timestamp-named videos are left; blank band name ends the list (or the run continues automatically after you assign every file)
 -   Automatic file cleanup (moves to trash after successful upload)
 -   Upload progress tracking
 
@@ -93,7 +93,7 @@ python app.py
 
 4. Follow the prompts:
     - **Festival name** (optional): press **Enter** to skip; if you type a name, every title uses `{Band} @ {Festival}` before the city (e.g. `Empyrium @ Walpurgisnacht | Berlin | …`).
-    - **Band 1 name**, then **number of videos** for that band (1–100). Repeat for band 2, 3, … . When there are no more bands, press **Enter** at `Band N name (press Enter if none):`.
+    - **Band 1 name**, then **number of videos** for that band (any integer from 1 up to how many timestamp-named files you have). Each later band accepts 1 through however many videos are left after earlier bands. Add more bands the same way, or press **Enter** at `Band N name (press Enter if none):` when you've named every act (your counts must still add up to the matching-file total).
     - **City**: if `PRESET_CITIES` is set in `.env`, choose a number or type another city; otherwise type the city name.
     - Confirm the printed summary, then wait for uploads to finish.
 

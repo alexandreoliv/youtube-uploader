@@ -88,7 +88,9 @@ def prompt_band_segments(total_videos: int) -> List[Tuple[str, int]]:
     Collect band/artist names and how many consecutive videos belong to each,
     in upload order. Empty band name (after the first) finishes input.
 
-    Counts must sum to total_videos; validated by caller.
+    Each count must be between 1 and how many timestamp-named videos are left
+    in order; when the last allocation uses all remaining files, no further
+    band prompts appear. Caller still checks the sum equals total_videos.
     """
     print(
         f"Assign bands in upload order — counts must add up to {total_videos} "
@@ -96,8 +98,12 @@ def prompt_band_segments(total_videos: int) -> List[Tuple[str, int]]:
     )
     segments: List[Tuple[str, int]] = []
     band_num = 1
+    remaining = total_videos
 
     while True:
+        if remaining <= 0:
+            return segments
+
         if band_num == 1:
             name = input("Band 1 name: ").strip()
         else:
@@ -113,17 +119,19 @@ def prompt_band_segments(total_videos: int) -> List[Tuple[str, int]]:
 
         while True:
             raw = input(
-                f"Number of videos for \"{name}\" (1–100): "
+                f"Number of videos for \"{name}\" "
+                f"(1–{remaining}): "
             ).strip()
             try:
                 n = int(raw)
             except ValueError:
-                print("Enter an integer from 1 to 100.")
+                print(f"Enter an integer from 1 to {remaining}.")
                 continue
-            if not (1 <= n <= 100):
-                print("Enter an integer from 1 to 100.")
+            if not (1 <= n <= remaining):
+                print(f"Enter an integer from 1 to {remaining}.")
                 continue
             segments.append((name, n))
+            remaining -= n
             band_num += 1
             break
 
