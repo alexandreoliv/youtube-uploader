@@ -120,8 +120,10 @@ def prompt_band_segments(total_videos: int) -> List[Tuple[str, int]]:
         while True:
             raw = input(
                 f"Number of videos for \"{name}\" "
-                f"(1–{remaining}): "
+                f"(1–{remaining}, default {remaining}): "
             ).strip()
+            if not raw:
+                raw = str(remaining)
             try:
                 n = int(raw)
             except ValueError:
